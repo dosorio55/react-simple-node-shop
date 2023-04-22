@@ -1,14 +1,37 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "../css/product.css";
+import useHttp from "./hooks/use-http";
+import { SERVER_URL } from "../utils/url";
+
+interface IProduct {
+  id: number;
+  title: string;
+  price: number;
+  imageUrl: string;
+  description: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 const Products = () => {
-  return (
-    <>
-      <h1>No Products Found!</h1>
-      {/* <main>
-        {prods.length > 0 ? (
+  const [products, setProducts] = useState<IProduct[]>();
+
+  const handleHttpProducs = useCallback((products: any) => {
+    setProducts(products as IProduct[]);
+  }, []);
+
+  const { getProducts, loading } = useHttp(handleHttpProducs);
+
+  useEffect(() => {
+    getProducts({ url: `${SERVER_URL}/products` });
+  }, [getProducts]);
+
+  const renderredProducts =
+    products && products.length > 0 ? (
+      <main>
+        {products.length > 0 ? (
           <div className="grid">
-            {prods.map((product) => (
+            {products.map((product) => (
               <article className="card product-item" key={product.id}>
                 <header className="card__header">
                   <h1 className="product__title">{product.title}</h1>
@@ -40,9 +63,10 @@ const Products = () => {
         ) : (
           <h1>No Products Found!</h1>
         )}
-      </main> */}
-    </>
-  );
+      </main>
+    ) : null;
+
+  return <>{loading ? <p>is loading</p> : renderredProducts}</>;
 };
 
 export default Products;
