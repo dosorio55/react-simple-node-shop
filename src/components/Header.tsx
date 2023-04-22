@@ -2,6 +2,7 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const MainHeader = () => {
+  // este cambio se quita seguro
   return (
     <header className="main-header">
       <button id="side-menu-toggle">Menu</button>
