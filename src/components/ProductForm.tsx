@@ -1,13 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "../css/forms.css";
+import useHttp from "./hooks/use-http";
+import { IProduct } from "./Products";
+import { SERVER_URL } from "../utils/url";
+import { useParams } from "react-router-dom";
+
+interface IFormProduct
+  extends Omit<IProduct, "id" | "createdAt" | "updatedAt"> {
+    editMode?: boolean;
+}
 
 const ProductForm = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<IFormProduct>({
     title: "",
     imageUrl: "",
-    price: "",
+    price: 0,
     description: "",
   });
+
+  const { id } = useParams<{ id: string }>();
+
+  const handleHttpProduct = useCallback((product: any) => {
+    console.log(product);
+
+    setFormData(product as IFormProduct);
+  }, []);
+
+  const { getProducts } = useHttp(handleHttpProduct);
+
+  useEffect(() => {
+    getProducts({ url: `${SERVER_URL}/admin/edit-product/${id}?edit=true` });
+  }, [getProducts, id]);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -65,7 +88,7 @@ const ProductForm = () => {
         />
       </div>
       <button className="btn" type="submit">
-        Add Product {/* {editing ? "Update Product" : "Add Product"} */}
+        {formData.editMode ? "Update Product" : "Add Product"}
       </button>
     </form>
   );

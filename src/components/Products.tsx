@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback } from "react";
 import "../css/product.css";
 import useHttp from "./hooks/use-http";
 import { SERVER_URL } from "../utils/url";
+import { Link } from "react-router-dom";
 
-interface IProduct {
+export interface IProduct {
   id: number;
   title: string;
   price: number;
@@ -16,11 +17,11 @@ interface IProduct {
 const Products = () => {
   const [products, setProducts] = useState<IProduct[]>();
 
-  const handleHttpProducs = useCallback((products: any) => {
+  const handleHttpProducts = useCallback((products: any) => {
     setProducts(products as IProduct[]);
   }, []);
 
-  const { getProducts, loading } = useHttp(handleHttpProducs);
+  const { getProducts, loading } = useHttp(handleHttpProducts);
 
   useEffect(() => {
     getProducts({ url: `${SERVER_URL}/products` });
@@ -44,18 +45,21 @@ const Products = () => {
                   <p className="product__description">{product.description}</p>
                 </div>
                 <div className="card__actions">
-                  <a
-                    href={`/admin/edit-product/${product.id}?edit=true`}
+                  <Link
+                    to={`/admin/edit-product/${product.id}?edit=true`}
                     className="btn"
                   >
                     Edit
-                  </a>
-                  <form action="/admin/delete-product" method="POST">
-                    <input type="hidden" value={product.id} name="productId" />
-                    <button className="btn" type="submit">
-                      Delete
-                    </button>
-                  </form>
+                  </Link>
+                  <Link
+                    to={`/shop/product-detail/${product.id}`}
+                    className="btn"
+                  >
+                    Details
+                  </Link>
+                  <button className="btn" type="submit">
+                    Delete
+                  </button>
                 </div>
               </article>
             ))}
