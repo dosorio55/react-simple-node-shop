@@ -1,36 +1,49 @@
 import React, { useState, useCallback, useEffect } from "react";
 import "../css/forms.css";
-import useHttp from "./hooks/use-http";
+import useHttp, { methods } from "./hooks/use-http";
 import { IProduct } from "./Products";
 import { SERVER_URL } from "../utils/url";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 interface IFormProduct
   extends Omit<IProduct, "id" | "createdAt" | "updatedAt"> {
-    editMode?: boolean;
+  editMode?: boolean;
 }
 
+const formInitialValue = {
+  title: "",
+  imageUrl: "",
+  price: 0,
+  description: "",
+};
+
 const ProductForm = () => {
-  const [formData, setFormData] = useState<IFormProduct>({
-    title: "",
-    imageUrl: "",
-    price: 0,
-    description: "",
-  });
+  const { pathname } = useLocation();
+  const navigate = useNavigate()
+
+  const edit = pathname.split("/").includes("edit-product");
+
+  const [formData, setFormData] = useState<IFormProduct>(formInitialValue);
 
   const { id } = useParams<{ id: string }>();
 
   const handleHttpProduct = useCallback((product: any) => {
-    console.log(product);
-
-    setFormData(product as IFormProduct);
+    if (id) {
+      setFormData(product as IFormProduct);
+    } else {
+      navigate('/products')
+    }
   }, []);
 
-  const { getProducts } = useHttp(handleHttpProduct);
+  const { fetchFunction } = useHttp(handleHttpProduct);
 
   useEffect(() => {
-    getProducts({ url: `${SERVER_URL}/admin/edit-product/${id}?edit=true` });
-  }, [getProducts, id]);
+    if (!id) {
+      setFormData(formInitialValue);
+      return;
+    }
+    fetchFunction({ url: `${SERVER_URL}/admin/edit-product/${id}` });
+  }, [edit, fetchFunction, id]);
 
   const handleInputChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -42,6 +55,12 @@ const ProductForm = () => {
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    fetchFunction({
+      url: `${SERVER_URL}/admin/add-product`,
+      body: formData,
+      method: methods.POST,
+    });
   }
 
   return (

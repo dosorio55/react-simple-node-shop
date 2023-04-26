@@ -21,11 +21,11 @@ const Products = () => {
     setProducts(products as IProduct[]);
   }, []);
 
-  const { getProducts, loading } = useHttp(handleHttpProducts);
+  const { fetchFunction, loading } = useHttp(handleHttpProducts);
 
   useEffect(() => {
-    getProducts({ url: `${SERVER_URL}/products` });
-  }, [getProducts]);
+    fetchFunction({ url: `${SERVER_URL}/products` });
+  }, [fetchFunction]);
 
   const renderredProducts =
     products && products.length > 0 ? (

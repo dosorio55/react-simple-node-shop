@@ -22,14 +22,14 @@ const ProducDetail: React.FC<Props> = () => {
     setProductInfo(products as IProduct);
   }, []);
 
-  const { getProducts } = useHttp(handleHttpProduct);
+  const { fetchFunction } = useHttp(handleHttpProduct);
   const addToCart = () => {
     // Add to cart logic goes here
   };
 
   useEffect(() => {
-    getProducts({ url: `${SERVER_URL}/products/${id}` });
-  }, [getProducts, id]);
+    fetchFunction({ url: `${SERVER_URL}/products/${id}` });
+  }, [fetchFunction, id]);
 
   return (
     <>

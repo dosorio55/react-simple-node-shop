@@ -16,7 +16,7 @@ interface IRequest {
 const useHttp = (applyDataFunction: (data: any) => void) => {
   const [loading, setloading] = useState(false);
 
-  const getProducts = useCallback(async (requestConfig: IRequest) => {
+  const fetchFunction = useCallback(async (requestConfig: IRequest) => {
     const { url, method, body } = requestConfig;
     try {
       setloading(true);
@@ -39,7 +39,7 @@ const useHttp = (applyDataFunction: (data: any) => void) => {
     }
   }, [applyDataFunction]);
 
-  return { loading, getProducts };
+  return { loading, fetchFunction };
 };
 
 export default useHttp;
